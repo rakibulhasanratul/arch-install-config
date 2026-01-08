@@ -64,7 +64,7 @@ passwd "$username"
 pacman -Sy
 
 # Install startup tools
-pacman -S wget curl git bc sudo --noconfirm
+pacman -S wget curl git bc sudo gvfs gvfs-mtp mtpfs libmtp tree-sitter-cli --noconfirm
 
 ## Configure sudo with pwfeedback
 echo ""
