@@ -42,11 +42,6 @@ echo "User $username (Rakibul Hasan Ratul) created with fish as default shell"
 echo "Setting password for $username:"
 passwd "$username"
 
-# Update package database
-pacman -Sy
-
-# Install startup tools
-pacman -S wget curl git sudo gvfs gvfs-mtp mtpfs libmtp tree-sitter-cli --noconfirm
 
 echo "Configuring sudo"
 if ! grep -q "^Defaults pwfeedback" /etc/sudoers; then
