@@ -143,7 +143,7 @@ pacman -S --noconfirm bat starship wl-clipboard xclip htop ripgrep noto-fonts-cj
 
 # Install graphical interface
 echo "Installing GNOME desktop environment and applications"
-pacman -S --noconfirm gnome-shell gdm gnome-control-center gnome-settings-daemon gnome-keyring nautilus sushi gnome-calculator gnome-browser-connector gnome-tweaks loupe  ptyxis steam gnome-system-monitor celluloid firefox
+pacman -S --noconfirm gnome-shell gdm gnome-control-center gnome-settings-daemon gnome-keyring nautilus sushi gnome-calculator gnome-browser-connector gnome-tweaks loupe  ptyxis steam gnome-system-monitor celluloid firefox pipewire-jack pipewire-pulse
 
 echo 'Installing paru'
 # The entire process of cloning and building is done as the non-root user

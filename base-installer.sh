@@ -48,7 +48,7 @@ mount -o noatime,compress=zstd,subvol=@snapshots /dev/nvme0n1p3 /mnt/.snapshots
 mount -o noatime,compress=zstd,subvol=@home /dev/nvme0n1p4 /mnt/home
 
 echo 'Installing base system'
-pacstrap -K /mnt base base-devel linux-lts linux-lts-headers linux-firmware btrfs-progs iwd sudo nano vim git fish nvim grub wget curl gvfs gvfs-mtp mtpfs libmtp tree-sitter-cli
+pacstrap -K /mnt base base-devel linux-lts linux-lts-headers linux-firmware btrfs-progs iwd sudo nano vim git fish nvim grub wget curl gvfs gvfs-mtp mtpfs libmtp tree-sitter-cli efibootmgr
 
 echo 'Generating fstab'
 genfstab -U /mnt >> /mnt/etc/fstab
