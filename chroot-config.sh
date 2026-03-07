@@ -3,28 +3,17 @@
 ## This script should be run AFTER chroot-ing into the new installation
 ## Usage: arch-chroot /mnt, then run this script
 
-echo "=== Arch Linux Post-Install Configuration ==="
-echo "Running inside chroot environment"
-echo ""
-
-## Set timezone
-echo "=== Setting timezone ==="
+echo "Setting Timezone..."
 ln -sf /usr/share/zoneinfo/Asia/Dhaka /etc/localtime
 hwclock --systohc
-echo "Timezone set to Asia/Dhaka"
 
-## Set locale
-echo "=== Configuring locale ==="
+echo "Configuring locale"
 sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
-echo "Locale set to en_US.UTF-8"
 
-## Set hostname
-echo ""
-echo "=== Setting hostname ==="
-hostname="archlinux"
-echo "$hostname" > /etc/hostname
+echo "Setting hostname"
+echo "archlinux" > /etc/hostname
 
 # Create hosts file
 cat > /etc/hosts << EOF
@@ -32,11 +21,8 @@ cat > /etc/hosts << EOF
 ::1         localhost
 127.0.1.1   ${hostname}.localdomain ${hostname}
 EOF
-echo "Hostname set to: $hostname"
 
-## Enable multilib repository
-echo ""
-echo "=== Enabling multilib repository ==="
+echo "Enabling multilib repository"
 if grep -q "^\[multilib\]" /etc/pacman.conf; then
     echo "Multilib already enabled"
 else
@@ -45,14 +31,10 @@ else
     echo "Multilib repository enabled"
 fi
 
-## Set root password
-echo ""
-echo "=== Setting root password ==="
+echo "Setting root password ++"
 passwd
 
-## Create user account
-echo ""
-echo "=== Creating user account ==="
+echo "Creating user account --"
 username="ratul"
 
 useradd -m -G wheel,audio,video,optical,storage -s /usr/bin/fish -c "Rakibul Hasan Ratul" "$username"
@@ -64,11 +46,9 @@ passwd "$username"
 pacman -Sy
 
 # Install startup tools
-pacman -S wget curl git bc sudo gvfs gvfs-mtp mtpfs libmtp tree-sitter-cli --noconfirm
+pacman -S wget curl git sudo gvfs gvfs-mtp mtpfs libmtp tree-sitter-cli --noconfirm
 
-## Configure sudo with pwfeedback
-echo ""
-echo "=== Configuring sudo ==="
+echo "Configuring sudo"
 if ! grep -q "^Defaults pwfeedback" /etc/sudoers; then
     # Use visudo to safely add pwfeedback
     echo "Defaults pwfeedback" | EDITOR='tee -a' visudo > /dev/null 2>&1
@@ -81,9 +61,7 @@ fi
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 echo "User $username added to wheel group with sudo privileges"
 
-# Grant passwordless sudo for pacman to allow unattended AUR helper installations
-echo ""
-echo "=== Configuring sudo for unattended installation ==="
+echo "Configuring sudo for unattended installation"
 cat > "/etc/sudoers.d/10-$username-pacman" << EOF
 # Allow user $username to install packages with pacman without a password
 $username ALL=(ALL) NOPASSWD: /usr/bin/pacman
@@ -91,9 +69,7 @@ EOF
 chmod 440 "/etc/sudoers.d/10-$username-pacman"
 echo "User $username can now run 'sudo pacman' without a password."
 
-## Configure GRUB kernel parameters
-echo ""
-echo "=== Configuring GRUB kernel parameters ==="
+echo "Configuring GRUB kernel parameters"
 
 # Backup original grub config
 cp /etc/default/grub /etc/default/grub.backup
@@ -152,42 +128,29 @@ echo "  - Zswap: enabled (zstd, z3fold, 20% RAM)"
 echo "  - Boot mode: verbose with systemd status"
 echo "  - Kernel log level: 3 (errors + warnings)"
 
-## Install and configure GRUB
-echo ""
-echo "=== Installing GRUB bootloader (UEFI) ==="
+echo "Installing GRUB bootloader (UEFI)"
 # Install GRUB for UEFI
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --boot-directory=/boot --bootloader-id=ArchLinux
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --boot-directory=/boot --bootloader-id=GRUB
 
 # Generate GRUB config
 grub-mkconfig -o /boot/grub/grub.cfg
 echo "GRUB installed and configured"
 
-## Enable NetworkManager
-echo ""
-echo "=== Enabling NetworkManager ==="
-systemctl enable NetworkManager
-echo "NetworkManager will start on boot"
-
-## Install additional packages
-echo ""
-echo "=== Installing additional packages ==="
-
+systemctl enable iwd
+systemctl enable systemd-resolved
+mkdir -p /etc/iwd
+touch /etc/iwd/main.conf
+printf "[General]\nEnableNetworkConfiguration=true\n[Network]\nNameResolvingService=systemd" > /etc/iwd/main.conf
 
 # Install the desired tools
 echo "Installing essential tools & libraries"
-pacman -S --noconfirm bat starship wl-clipboard xclip htop ripgrep noto-fonts-cjk noto-fonts-extra lib32-vulkan-radeon ibus-libpinyin
-
-# Install dev tools
-echo "Installing development tools"
-pacman -S --noconfirm base-devel gcc npm pnpm cargo python python-pip uv lazygit tmux
+pacman -S --noconfirm bat starship wl-clipboard xclip htop ripgrep noto-fonts-cjk noto-fonts-extra lib32-vulkan-radeon ibus-libpinyin base-devel gcc npm pnpm cargo python python-pip uv lazygit tmux
 
 # Install graphical interface
 echo "Installing GNOME desktop environment and applications"
 pacman -S --noconfirm gnome-shell gdm gnome-control-center gnome-settings-daemon gnome-keyring nautilus sushi gnome-calculator gnome-browser-connector gnome-tweaks loupe  ptyxis steam gnome-system-monitor celluloid firefox
 
-# Install paru (AUR helper - simpler than yay)
-echo ""
-echo "=== Installing paru (AUR helper) ==="
+echo 'Installing paru'
 # The entire process of cloning and building is done as the non-root user
 # to avoid permission issues and follow best practices for makepkg.
 sudo -u "$username" bash -c '
@@ -201,70 +164,22 @@ sudo -u "$username" bash -c '
 '
 echo "paru installed"
 
-# Install AUR packages
-echo ""
-echo "=== Installing AUR packages ==="
 echo "Installing AUR packages..."
 sudo -u $username paru -S --noconfirm brave-bin openbangla-keyboard-bin ttf-freebanglafont ttf-indic-otf ttf-whatsapp-emoji gnome-characters
 
-# Enable GDM (GNOME Display Manager)
+echo 'Enabling GDM'
 systemctl enable gdm
-echo "GDM enabled - graphical login will start on boot"
 
-## Create and enable swapfile
-echo ""
-echo "=== Creating swapfile ==="
-# Calculate swap size as 1.5x RAM
-total_ram_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
-total_ram_gb=$(echo "scale=2; $total_ram_kb / 1024 / 1024" | bc)
-swap_size_gb=$(echo "scale=0; ($total_ram_kb * 1.5) / 1024 / 1024" | bc)
-
-echo "Detected RAM: ${total_ram_gb}GB"
-echo "Creating swapfile: ${swap_size_gb}GB (1.5x RAM)"
-
-# Create /swap directory if it doesn't exist
+echo "Creating swapfile"
 mkdir -p /swap
-
-# Create swapfile on btrfs
-btrfs filesystem mkswapfile --size ${swap_size_gb}G --uuid clear /swap/swapfile
+btrfs filesystem mkswapfile --size 11G --uuid clear /swap/swapfile
 chmod 600 /swap/swapfile
 mkswap /swap/swapfile
 swapon /swap/swapfile
 
 # Add to fstab
 echo "/swap/swapfile none swap defaults 0 0" >> /etc/fstab
-echo "${swap_size_gb}GB swapfile created and enabled"
 
-## Configure GNOME power settings for auto-suspend
-echo ""
-echo "=== Configuring GNOME power settings ==="
-# Set system to suspend after 6 minutes of inactivity (360 seconds)
-# These settings will apply to the ratul user
-sudo -u $username dbus-launch gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 360
-sudo -u $username dbus-launch gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'suspend'
-sudo -u $username dbus-launch gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 360
-sudo -u $username dbus-launch gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type 'suspend'
-echo "GNOME will suspend after 6 minutes of inactivity (both AC and battery)"
-
-## Display configuration summary
-echo ""
-echo "========================================"
-echo "=== Configuration Summary ==="
-echo "========================================"
-echo "Timezone:          Asia/Dhaka"
-echo "Locale:            en_US.UTF-8"
-echo "Hostname:          archlinux"
-echo "User:              ratul (Rakibul Hasan Ratul)"
-echo "Multilib:          Enabled"
-echo "Sudo pwfeedback:   Enabled"
-echo "Zswap:             Enabled (zstd, z3fold, 20% RAM)"
-echo "Boot mode:         Verbose (detailed logs)"
-echo "Default shell:     fish"
-echo "NetworkManager:    Enabled"
-echo "Display Manager:   GDM (GNOME)"
-echo "Swapfile:          ${swap_size_gb}GB (1.5x RAM)"
-echo "Auto-suspend:      6 minutes (GNOME)"
-echo "========================================"
-echo ""
-echo "=== Installation Complete! ==="
-echo "You can now exit chroot and reboot the system."
+echo
+echo
+echo Completed
