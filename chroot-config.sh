@@ -136,6 +136,7 @@ systemctl enable systemd-resolved
 mkdir -p /etc/iwd
 touch /etc/iwd/main.conf
 printf "[General]\nEnableNetworkConfiguration=true\n[Network]\nNameResolvingService=systemd" > /etc/iwd/main.conf
+ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 
 # Install the desired tools
 echo "Installing essential tools & libraries"
@@ -160,7 +161,7 @@ sudo -u "$username" bash -c '
 echo "paru installed"
 
 echo "Installing AUR packages..."
-sudo -u $username paru -S --noconfirm brave-bin openbangla-keyboard-bin ttf-freebanglafont ttf-indic-otf ttf-whatsapp-emoji gnome-characters
+sudo -u $username paru -S --noconfirm brave-bin openbangla-keyboard-bin ttf-freebanglafont ttf-indic-otf ttf-whatsapp-emoji gnome-characters ttf-firacode-nerd
 
 echo 'Enabling GDM'
 systemctl enable gdm
