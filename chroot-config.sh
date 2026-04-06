@@ -131,12 +131,7 @@ grub-install --target=x86_64-efi --efi-directory=/boot/efi --boot-directory=/boo
 grub-mkconfig -o /boot/grub/grub.cfg
 echo "GRUB installed and configured"
 
-systemctl enable iwd
-systemctl enable systemd-resolved
-mkdir -p /etc/iwd
-touch /etc/iwd/main.conf
-printf "[General]\nEnableNetworkConfiguration=true\n[Network]\nNameResolvingService=systemd" > /etc/iwd/main.conf
-ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+systemctl enable NetworkManager
 
 # Install the desired tools
 echo "Installing essential tools & libraries"
