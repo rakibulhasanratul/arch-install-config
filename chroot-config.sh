@@ -135,11 +135,11 @@ systemctl enable NetworkManager
 
 # Install the desired tools
 echo "Installing essential tools & libraries"
-pacman -S --noconfirm bat starship wl-clipboard xclip htop ripgrep noto-fonts-cjk noto-fonts-extra lib32-vulkan-radeon ibus-libpinyin base-devel gcc npm pnpm cargo python python-pip uv lazygit tmux
+pacman -Sy --noconfirm bat starship wl-clipboard xclip htop ripgrep noto-fonts-cjk noto-fonts-extra vulkan-radeon ibus-libpinyin base-devel gcc npm pnpm cargo python python-pip uv lazygit tmux
 
 # Install graphical interface
 echo "Installing GNOME desktop environment and applications"
-pacman -S --noconfirm gnome-shell gdm gnome-control-center gnome-settings-daemon gnome-keyring nautilus sushi gnome-calculator gnome-browser-connector gnome-tweaks loupe  ptyxis steam gnome-system-monitor celluloid firefox pipewire-jack pipewire-pulse
+pacman -Sy --noconfirm gnome-shell gdm gnome-control-center gnome-settings-daemon gnome-keyring nautilus sushi gnome-calculator gnome-browser-connector gnome-tweaks loupe  ghostty steam gnome-system-monitor celluloid firefox pipewire-jack pipewire-pulse
 
 echo 'Installing paru'
 # The entire process of cloning and building is done as the non-root user
@@ -147,6 +147,7 @@ echo 'Installing paru'
 sudo -u "$username" bash -c '
     set -e
     cd /tmp/
+    rm -rf /tmp/paru
     git clone https://aur.archlinux.org/paru.git
     cd paru
     makepkg -si --noconfirm
