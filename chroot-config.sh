@@ -133,13 +133,10 @@ echo "GRUB installed and configured"
 
 systemctl enable NetworkManager
 
-# Install the desired tools
-echo "Installing essential tools & libraries"
-pacman -Sy --noconfirm bat starship wl-clipboard xclip htop ripgrep noto-fonts-cjk noto-fonts-extra vulkan-radeon ibus-libpinyin base-devel gcc npm pnpm cargo python python-pip uv lazygit tmux
-
-# Install graphical interface
-echo "Installing GNOME desktop environment and applications"
-pacman -Sy --noconfirm gnome-shell gdm gnome-control-center gnome-settings-daemon gnome-keyring nautilus sushi gnome-calculator gnome-browser-connector gnome-tweaks loupe  ghostty steam gnome-system-monitor celluloid firefox pipewire-jack pipewire-pulse
+# Install AMD GPU drivers first (before Steam, which depends on lib32-vulkan-driver
+# — without explicit AMD packages, --noconfirm may auto-select nvidia as the provider)
+echo "Installing AMD GPU drivers"
+pacman -Sy --noconfirm mesa lib32-mesa vulkan-radeon lib32-vulkan-radeon libva-mesa-driver
 
 echo 'Installing paru'
 # The entire process of cloning and building is done as the non-root user
@@ -156,9 +153,9 @@ sudo -u "$username" bash -c '
 '
 echo "paru installed"
 
-echo "Installing AUR packages..."
-sudo -u $username paru -S --noconfirm brave-bin openbangla-keyboard-bin ttf-freebanglafont ttf-indic-otf ttf-whatsapp-emoji gnome-characters ttf-firacode-nerd
-
+echo "Installing softwares"
+sudo -u $username paru -Sy --noconfirm brave-bin openbangla-keyboard-bin ttf-freebanglafont ttf-indic-otf ttf-whatsapp-emoji gnome-characters ttf-firacode-nerd gnome-shell gdm gnome-control-center gnome-settings-daemon gnome-keyring nautilus sushi gnome-calculator gnome-browser-connector gnome-tweaks loupe ghostty steam gnome-system-monitor celluloid firefox pipewire-jack pipewire-pulse starship wl-clipboard xclip htop ripgrep noto-fonts-cjk noto-fonts-extra ibus-libpinyin base-devel gcc npm pnpm cargo python python-pip uv lazygit tmux opencode visual-studio-code-bin antigravity windsurf
+ 
 echo 'Enabling GDM'
 systemctl enable gdm
 
