@@ -155,7 +155,7 @@ sudo -u "$username" bash -c '
 echo "paru installed"
 
 echo "Installing softwares"
-sudo -u $username paru -Sy --noconfirm brave-bin openbangla-keyboard-bin ttf-freebanglafont ttf-indic-otf ttf-whatsapp-emoji gnome-characters ttf-firacode-nerd gnome-shell gdm gnome-control-center gnome-settings-daemon gnome-keyring nautilus sushi gnome-calculator gnome-browser-connector gnome-tweaks loupe ghostty steam gnome-system-monitor celluloid firefox pipewire-jack pipewire-pulse starship wl-clipboard xclip htop ripgrep noto-fonts-cjk noto-fonts-extra ibus-libpinyin gcc npm pnpm cargo python python-pip uv lazygit tmux opencode visual-studio-code-bin antigravity windsurf
+sudo -u $username paru -Sy --noconfirm brave-bin openbangla-keyboard-bin ttf-freebanglafont ttf-indic-otf ttf-whatsapp-emoji gnome-characters ttf-firacode-nerd gnome-shell gdm gnome-control-center gnome-settings-daemon gnome-keyring nautilus sushi gnome-calculator gnome-browser-connector gnome-tweaks loupe ghostty steam gnome-system-monitor celluloid firefox pipewire-jack pipewire-pulse starship wl-clipboard xclip htop ripgrep noto-fonts-cjk noto-fonts-extra ibus-libpinyin gcc npm pnpm cargo python python-pip uv lazygit tmux opencode-bin visual-studio-code-bin antigravity windsurf libreoffice-fresh marktext-bin inkscape
 
 echo Remove Unwanted Dependencies
 pacman -Rns vim noto-fonts-emoji
